@@ -9,41 +9,55 @@ def cleanup_url(url: str) -> str:
     pattern_replace = re.compile(r"http[s]://|www.")
     return pattern_replace.sub("", url)
 
-def whois_domain(item):
-    item_clean = cleanup_url(item['url'])
-    w = whois.whois(item_clean)
-    attributs_whois = ['registrant_name', 'expiration_date', 'registrar', 'name_servers']
-    item['lookup'] = item_clean
-    for attribut_whois in attributs_whois:
-        # print(f'{item_clean}: Checking {attribut_whois}')
+
+""" looks up domain and returns result """
+def whois_domain(domain: str) -> dict:
+    return whois.whois(domain)
+
+def whois_domain_attribute_getter(w: dict, attributs: list = \
+        ['registrant_name', 'expiration_date', 'registrar', 'name_servers','dnssec']) -> dict:
+    _result = dict()
+    for attribut_whois in attributs:
         try:
             if isinstance(w[attribut_whois], datetime):
-                item[attribut_whois] = w[attribut_whois].strftime("%Y-%m-%d")
+                _result[attribut_whois] = w[attribut_whois].strftime("%Y-%m-%d")
             elif isinstance(w[attribut_whois], list):
-                item[attribut_whois] = ",".join(w[attribut_whois])
+                _result[attribut_whois] = ";".join(w[attribut_whois])
             else:
-                item[attribut_whois] = w[attribut_whois]
+                _result[attribut_whois] = w[attribut_whois]
         except BaseException as err:
-            print(f'{item_clean}: Problem. Error: {err}')
-            item[attribut_whois] = "N/A"
-    return item
+            print(f'{w["domain_name"]}: {attribut_whois} Problem. Error: {err}')
+            _result[attribut_whois] = "N/A"
+    return _result
+
+
+def whois_domain_raw(items):
+    for item in items:
+        print(whois_domain(cleanup_url(item['url'])))
 
 
 """ takes input dict, runs whois on url and returns item with added attributs to dict"""
 def whois_domain_loop(items: list) -> list:
     _results = list()
     for item in items:
-        _results.append(whois_domain(item))
+        item['domain'] = cleanup_url(item['url'])
+        item_w = whois_domain(item['domain'])
+        item.update(whois_domain_attribute_getter(item_w))
+        _results.append(item)
     return _results
 
 
 @click.command()
 @click.option('--input', prompt='filename')
 @click.option('--output', default='result.csv')
-def run_main(input: str, output: str) -> None:
+@click.option('--raw', default='False', type=bool)
+def run_main(input: str, output: str, raw: bool) -> None:
     items = get_csv(input)
-    results = whois_domain_loop(items)
-    write_csv(results, output)
+    if raw:
+        whois_domain_raw(items)
+    else:
+        results = whois_domain_loop(items)
+        write_csv(results, output)
 
 
 if __name__ == '__main__':

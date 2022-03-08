@@ -1,7 +1,0 @@
-url,lookup,registrant_name,expiration_date,registrar,name_servers
-https://www.dataman.se,dataman.se,(not shown),2023-02-13,Loopia AB,"ns2.loopia.se 93.188.0.21 2a02:250:ffff::21,ns1.loopia.se 93.188.0.20"
-https://www.gp.se,gp.se,DIDEP2933-002933,2022-12-31,Ports Group AB,"dns04.ports.net,dns03.ports.se 94.237.33.102 2a04:3540:1000:310:287e:f6ff:fe1d:4789,dns02.ports.se 45.63.42.179 2001:19f0:5001:2a:5400:00ff:fe38:1e6f,dns01.dipcon.com 193.14.90.50"
-www.bluemotion.se,bluemotion.se,(not shown),2022-08-09,Loopia AB,"ns1.loopia.se 93.188.0.20,ns2.loopia.se 93.188.0.21 2a02:250:ffff::21"
-www.atgarderivatten.se,atgarderivatten.se,roglns8441-00001,2023-01-24,Leissner Data AB,"ns1.loopia.se 93.188.0.20,ns2.loopia.se 93.188.0.21 2a02:250:ffff::21"
-www.augustsson.eu,augustsson.eu,N/A,N/A,,ns02.one.com
-www.google.com,google.com,N/A,N/A,"MarkMonitor, Inc.","NS1.GOOGLE.COM,NS2.GOOGLE.COM,NS3.GOOGLE.COM,NS4.GOOGLE.COM,ns1.google.com,ns2.google.com,ns4.google.com,ns3.google.com"

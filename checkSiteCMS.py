@@ -1,6 +1,6 @@
 import os
 import json
-from checkSiteStatus import validate_http, get_csv, write_csv
+from checkSiteStatus import validate_http, get_csv
 import click
 
 """ whatis query that runs wad-cmd"""
@@ -29,7 +29,6 @@ def run_main(input: str, output: str) -> None:
     results = whatis_loop(items)
     #print(f'final results: {results}')
     write_json(results, output)
-    #write_csv(results, output)
 
 
 if __name__ == '__main__':

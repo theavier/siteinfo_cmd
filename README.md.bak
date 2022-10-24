@@ -8,8 +8,5 @@ Outputs to --output filename. If now value given, defaults to results.csv
 Python check for whois attributes. Returns ['registrant_name', 'expiration_date', 'registrar', 'name_servers'] if available.
 /> python checkSiteWhois.py --input input.csv --output newname.csv
 
-Check only one site
-/> python checkSiteWhois.py --input_raw mydomain.com 
-
 Python check for what is running. Returns json 
 /> python checkSitecms.py --input input.csv --output result_whatis.json

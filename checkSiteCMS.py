@@ -21,6 +21,8 @@ def write_json(items: list, output) -> None:
     with open(output, 'w') as outfile:
         json.dump(items, outfile)
 
+
+
 @click.command()
 @click.option('--input', prompt='filename')
 @click.option('--output', default='result_whatis.json')

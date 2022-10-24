@@ -5,3 +5,5 @@ six>=1.7.3
 mock>=1.3.0
 wad
 ipwhois
+axe-selenium-python
+selenium 

@@ -1,6 +1,8 @@
 import click
 import whois
 import re
+import sys
+from loguru import logger
 from datetime import datetime
 from checkSiteStatus import get_csv, write_csv
 
@@ -16,7 +18,8 @@ def whois_domain(domain: str) -> dict:
     try:
         return whois.whois(domain)
     except BaseException as err:
-        print(f'{domain} Problem. Error: {err}')
+        #print(f'{domain} Problem. Error: {err}')
+        logger.warning(f'{domain} Problem. Error: {err}')
         return None
 
 
@@ -34,6 +37,7 @@ def whois_domain_extract(w: dict, attributs: list = \
                     _result[attribut_whois] = w[attribut_whois]
             except BaseException as err:
                 #print(f'{w["domain_name"]}: {attribut_whois} Problem. Error: {err}')
+                logger.warning(f'{w["domain_name"]}: {attribut_whois} Problem. Error: {err}')
                 _result[attribut_whois] = "N/A"
     else:
         _result = whois_domain_attribute_empty(_result, attributs)
@@ -60,7 +64,6 @@ def whois_domain_loop(items: list) -> list:
     for item in items:
         item.update(whois_domain_attributes(item['url']))
         _results.append(item)
-
     #_results = [item.update(whois_domain_attributes(item['url'])) for item in items]
     #print(f'whois_domain_loop: outer type={type(_results)}, inner type={type(_results[0])}')
     return _results
@@ -72,6 +75,7 @@ def whois_domain_loop(items: list) -> list:
 @click.option('--output', default='result.csv')
 @click.option('--raw', default='False', type=bool)
 def run_main(input: str, input_raw: str, output: str, raw: bool) -> None:
+    logger.add("log.log", rotation="12:00")
     if input_raw:
         return whois_domain_raw_name(input_raw)
     else:

@@ -6,25 +6,30 @@ from loguru import logger
 from datetime import datetime
 from checkSiteStatus import get_csv, write_csv
 
-""" trims away http[s] and www."""
+
 def cleanup_url(url: str) -> str:
+    """ trims away http[s] and www."""
     pattern_replace = re.compile(r"http[s]://|www\.")
     return pattern_replace.sub("", url)
 
 
-""" looks up domain and returns result """
 def whois_domain(domain: str) -> dict:
+    """ looks up domain and returns result """
     domain = cleanup_url(domain)
     try:
         return whois.whois(domain)
     except BaseException as err:
-        #print(f'{domain} Problem. Error: {err}')
         logger.warning(f'{domain} Problem. Error: {err}')
         return None
 
 
 def whois_domain_extract(w: dict, attributs: list = \
-        ['registrant_name', 'expiration_date', 'registrar', 'name_servers','dnssec','org']) -> dict:
+        ['registrant_name', 'expiration_date', 'registrar', 'name_servers', 'dnssec', 'org']) -> dict:
+    def _attribute_empty(w: dict, attributs: list) -> dict:
+        for attribut in attributs:
+            w[attribut] = "Not found"
+        return w
+
     _result = dict()
     if w:
         for attribut_whois in attributs:
@@ -36,33 +41,18 @@ def whois_domain_extract(w: dict, attributs: list = \
                 else:
                     _result[attribut_whois] = w[attribut_whois]
             except BaseException as err:
-                #print(f'{w["domain_name"]}: {attribut_whois} Problem. Error: {err}')
                 logger.warning(f'{w["domain_name"]}: {attribut_whois} Problem. Error: {err}')
                 _result[attribut_whois] = "N/A"
     else:
-        _result = whois_domain_attribute_empty(_result, attributs)
+        _result = _attribute_empty(_result, attributs)
     return _result
 
-def whois_domain_attribute_empty(w: dict, attributs: list) -> dict:
-    for attribut in attributs:
-        w[attribut] = "Not found"
-    return w
 
-def whois_domain_attributes(url):
-    return whois_domain_extract(whois_domain(url))
-
-def whois_domain_raw(items):
-    for item in items:
-        print(whois_domain(cleanup_url(item['url'])))
-
-def whois_domain_raw_name(item):
-    print(whois_domain(cleanup_url(item)))
-
-""" takes input dict, runs whois on url and returns item with added attributs to dict"""
-def whois_domain_loop(items: list) -> list:
+def whois_domain_items(items: list) -> list:
+    """ takes input dict, runs whois on url and returns item with added attributs to dict"""
     _results = list()
     for item in items:
-        item.update(whois_domain_attributes(item['url']))
+        item.update(whois_domain_extract(whois_domain(item['url'])))
         _results.append(item)
     #_results = [item.update(whois_domain_attributes(item['url'])) for item in items]
     #print(f'whois_domain_loop: outer type={type(_results)}, inner type={type(_results[0])}')
@@ -70,21 +60,13 @@ def whois_domain_loop(items: list) -> list:
 
 
 @click.command()
-@click.option('--input', default='input.csv')
-@click.option('--input_raw', default=None)
+@click.option('--csv', default='input.csv')
 @click.option('--output', default='result.csv')
-@click.option('--raw', default='False', type=bool)
-def run_main(input: str, input_raw: str, output: str, raw: bool) -> None:
+def run_main(csv: str, output: str) -> None:
     logger.add("log.log", rotation="12:00")
-    if input_raw:
-        return whois_domain_raw_name(input_raw)
-    else:
-        items = get_csv(input)
-    if raw:
-        whois_domain_raw(items)
-    else:
-        results = whois_domain_loop(items)
-        write_csv(results, output)
+    items = get_csv(csv)
+    results = whois_domain_items(items)
+    write_csv(results, output)
 
 
 if __name__ == '__main__':

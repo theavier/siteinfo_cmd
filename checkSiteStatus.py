@@ -4,16 +4,17 @@ import requests
 import re
 from loguru import logger
 
-""" imports csv content, returns list"""
+
 def get_csv(_input: str) -> list:
+    """ imports csv content, returns list"""
     with open(_input) as csv_file:
         items = list(csv.DictReader(csv_file))
     return items
 
-""" outputs changes to csv """
+
 def write_csv(_items: list, output: str) -> None:
+    """ outputs changes to csv """
     keys = _items[0].keys()
-    #print(f'items: {_items}')
     logger.info(f'items: {_items}')
     with open(output, 'w', newline='', encoding='utf-8') as file:
         writer = csv.DictWriter(file, keys)
@@ -21,23 +22,25 @@ def write_csv(_items: list, output: str) -> None:
         writer.writerows(_items)
 
 
-""" adds https:// if missing"""
 def validate_http(url: str) -> str:
+    """ adds https:// if missing"""
     return url if re.match("^http[s]://", url) else f'https://{url}'
 
 
-""" makes request, gets status and ip and returns result """
 def add_statuscode(_items: list) -> list:
+    """ makes request, gets status and ip and returns result """
     return [add_statuscode_item(item) for item in _items]
 
 
 def make_request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36', }):
+    """ makes connection to url """
     r = requests.get(validate_http(url), stream=True, headers=headers)
     ip = r.raw._connection.sock.getpeername()[0]
     return r.status_code, ip
 
 
 def add_statuscode_item(item: dict) -> dict:
+    """ makes lookup of ip for item, adds ip and statuscode to dict """
     def _add_status_fill_na(_item: dict, err_message: str) -> dict:
         _item['error'] = err_message
         _item['statuscode'] = _item['ip'] = "N/A"
@@ -65,11 +68,11 @@ def add_statuscode_item(item: dict) -> dict:
 
 
 @click.command()
-@click.option('--input', prompt='filename')
+@click.option('--input_file', prompt='filename')
 @click.option('--output', default='result.csv')
-def run_main(input: str, output: str) -> None:
+def run_main(input_file: str, output: str) -> None:
     logger.add("log.log", rotation="12:00")
-    items = get_csv(input)
+    items = get_csv(input_file)
     results = add_statuscode(items)
     write_csv(results, output)
 

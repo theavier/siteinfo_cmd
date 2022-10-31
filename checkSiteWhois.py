@@ -1,10 +1,9 @@
 import click
 import whois
 import re
-import sys
 from loguru import logger
 from datetime import datetime
-from checkSiteStatus import get_csv, write_csv
+from tools import get_csv, write_csv
 
 
 def cleanup_url(url: str) -> str:

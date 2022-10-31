@@ -8,7 +8,7 @@ from tools import get_csv, get_csv_asjson, merge_list_dicts
 csv = "C:\code\siteinfo_cmd\dnslistan_test_small.csv"
 items = get_csv(csv)
 #print(f'type: {type(items)}, items: {items}')
-
+help(whatis_item())
 #results = whois_domain_items(items)
 #print(f'type: {type(results)}, items: {results}')
 #items2 = get_csv(csv)
@@ -18,9 +18,9 @@ items = get_csv(csv)
 #results_whatis = whatis_items(items)
 #print(f'whatis results: {type(results_whatis)}, content: {results_whatis}')
 
-results_whatis = whatis_item(items[1])
-print(f'whatis results: {type(results_whatis)}, content: {results_whatis}')
+#results_whatis = whatis_items(items)
+#print(f'whatis results: {type(results_whatis)}, content: {results_whatis}')
 
 #combine values
-#result = merge_list_dicts(results, items2, "url")
-#print(f'merged_results: {result}, type: {type(result)}')
+result = merge_list_dicts(results, results_code, "url")
+print(f'merged_results: {result}, type: {type(result)}')

@@ -1,8 +1,9 @@
 import os
 import json
-from checkSiteStatus import validate_http, get_csv
+from checkSiteStatus import validate_http
 import click
 from loguru import logger
+from tools import get_csv, write_csv, write_json
 
 """ whatis query that runs wad-cmd"""
 def query_whatis_run(domain:str) -> str:
@@ -11,40 +12,25 @@ def query_whatis_run(domain:str) -> str:
 
 
 def whatis_items(items: list) -> list:
-    # return [json.loads(query_whatis_run(validate_http(item["url"]))) for item in items]
-    _results = list()
-    for item in items:
-        logger.info(f'{item["url"]}: Checking')
-        _results.append(json.loads(query_whatis_run(validate_http(item["url"]))))
-    return _results
+    """ runs whatis_item on list of dicts """
+    return [whatis_item(item) for item in items]
 
-def whatis_item(item: dict):
-    logger.info(f'{item["url"]}: Checking')
+
+def whatis_item(item: dict) -> dict:
+    """ runs query_whatis_run on item['url'],
+    turns returned json into dict and places into returning dict under ['cms']
+    If return is empty, return N/A """
+    logger.info(f'Checking: {item["url"]}')
     result = json.loads(query_whatis_run(validate_http(item['url'])))
-    result_values = result.values()
-    logger.info(f'looping type: {type(result_values)}')
-    for sub_item in result_values:
-        logger.info(f'type: {type(item)}, value: {sub_item} lap1')
-        #item = sub_item.copy()
-        item = item | sub_item
-        for key in sub_item:
-
-            print(key)
-
-    # TODO figure out how to return same dict with added cmsinfo
+    item['cms'] = list(result.values())[0] if result else "N/A"
     return item
-
-def write_json(items: list, output) -> None:
-    with open(output, 'w') as outfile:
-        json.dump(items, outfile)
-
 
 
 @click.command()
-@click.option('--input', prompt='filename')
+@click.option('--csv', prompt='filename')
 @click.option('--output', default='result_whatis.json')
-def run_main(input: str, output: str) -> None:
-    items = get_csv(input)
+def run_main(csv: str, output: str) -> None:
+    items = get_csv(csv)
     results = whatis_items(items)
     #print(f'final results: {results}')
     write_json(results, output)

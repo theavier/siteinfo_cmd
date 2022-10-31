@@ -1,8 +1,0 @@
-url,statuscode,ip,error
-https://www.dataman.se,200,83.250.16.57,
-https://www.gp.se,200,104.17.9.41,
-www.bluemotion.se,N/A,N/A,ConnectionError
-www.atgarderivatten.se,200,93.188.2.52,
-www.augustsson.eu,200,77.111.240.9,
-www.google.com,200,172.217.21.164,
-www.interregeurope.eu,200,104.21.39.36,

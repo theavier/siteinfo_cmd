@@ -2,11 +2,27 @@ import csv
 import json
 from loguru import logger
 
+
 def get_csv(_input: str) -> list:
     """ imports csv content, returns list"""
     with open(_input) as csv_file:
         items = list(csv.DictReader(csv_file))
         return items
+
+
+def write_csv(_items: list, output: str) -> None:
+    """ outputs changes to csv """
+    keys = _items[0].keys()
+    logger.info(f'items: {_items}')
+    with open(output, 'w', newline='', encoding='utf-8') as file:
+        writer = csv.DictWriter(file, keys)
+        writer.writeheader()
+        writer.writerows(_items)
+
+
+def write_json(items: list, output) -> None:
+    with open(output, 'w') as outfile:
+        json.dump(items, outfile)
 
 
 def get_csv_asjson(_input: str):
@@ -21,7 +37,7 @@ def merge_dicts(first: dict, second: dict, key: str):
     output_dict = dict()
     for dct in first, second:
         output_dict.setdefault(dct[key], dict()).update(dct)
-    return output_dict.values()
+    return list(output_dict.values())[0]
 
 
 def merge_list_dicts(first: list, second: list, key: str) -> list:

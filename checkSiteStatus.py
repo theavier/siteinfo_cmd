@@ -1,25 +1,8 @@
 import click
-import csv
 import requests
 import re
 from loguru import logger
-
-
-def get_csv(_input: str) -> list:
-    """ imports csv content, returns list"""
-    with open(_input) as csv_file:
-        items = list(csv.DictReader(csv_file))
-    return items
-
-
-def write_csv(_items: list, output: str) -> None:
-    """ outputs changes to csv """
-    keys = _items[0].keys()
-    logger.info(f'items: {_items}')
-    with open(output, 'w', newline='', encoding='utf-8') as file:
-        writer = csv.DictWriter(file, keys)
-        writer.writeheader()
-        writer.writerows(_items)
+from tools import get_csv, write_csv
 
 
 def validate_http(url: str) -> str:

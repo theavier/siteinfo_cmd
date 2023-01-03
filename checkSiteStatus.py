@@ -2,7 +2,7 @@ import typer
 import requests
 import re
 from loguru import logger
-from tools import get_csv, write_csv, log_remove_verbose, save_or_print, list_or_item, log_init
+from tools import save_or_print, list_or_item, log_init
 
 app = typer.Typer()
 
@@ -52,10 +52,11 @@ def add_statuscode_item(item: dict) -> dict:
 
 
 @app.command('lookup')
-def run_main(url: str = typer.Argument(None, help='url to scan'),
+def main(url: str = typer.Argument(None, help='url to scan'),
     csv: str = typer.Option(None, help='csv with urls to scan'),
     output: str = typer.Option(None, help='output filename'),
     verbose: bool = typer.Option(False)) -> None:
+    """ Runs ip lookup on url """
     log_init(verbose)
     items = list_or_item(url, csv)
     end_results = add_statuscode(items)

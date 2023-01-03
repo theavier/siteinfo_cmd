@@ -3,7 +3,7 @@ import typer
 import re
 from loguru import logger
 from datetime import datetime
-from tools import get_csv, write_csv, log_remove_verbose
+from tools import log_init, list_or_item, save_or_print
 
 app = typer.Typer()
 
@@ -27,6 +27,7 @@ def whois_domain(domain: str) -> dict:
 
 def whois_domain_extract(w: dict, attributs: list = \
         ['registrant_name', 'expiration_date', 'registrar', 'name_servers', 'dnssec', 'org']) -> dict:
+    """ extracts selected attributs from whois results """
     def _attribute_empty(w: dict, attributs: list) -> dict:
         for attribut in attributs:
             w[attribut] = "Not found"
@@ -60,27 +61,15 @@ def whois_domain_items(items) -> list:
 
 
 @app.command('lookup')
-def run_main(url: str = typer.Argument(None, help='url to scan'),
+def main(url: str = typer.Argument(None, help='url to scan'),
              csv: str = typer.Option(None, help='csv with urls to scan'),
              output: str = typer.Option(None, help='output filename'),
              verbose: bool = typer.Option(False)) -> None:
-    """ main function """
-    if verbose is not True:
-        log_remove_verbose()
-    logger.add("log.log")
-    if csv:
-        logger.info(f'csv param used: {csv}')
-        items = get_csv(csv)
-        results = whois_domain_items(items)
-    else:
-        logger.info(f'url param used: {url}')
-        results = whois_domain_extract(whois_domain(url))
-    if output:
-        logger.info(f' output param used: {output}')
-        write_csv(results, output)
-    else:
-        logger.info(f'Printing results...')
-        print(results)
+    """ Runs whois on url """
+    log_init(verbose)
+    items = list_or_item(url, csv)
+    results = whois_domain_items(items)
+    save_or_print(results, output)
 
 
 if __name__ == '__main__':

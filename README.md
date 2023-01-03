@@ -1,16 +1,16 @@
 Python check for status of urls. Returns ip, statuscode
 
 Usage:
-/> python siteinfo.py status lookup --csv input_csv --output results.json
+/> python siteinfo.py status --csv input_csv --output results.json
 
 Outputs to --output filename. If no value given, prints results
 
 Python check for whois attributes. Returns ['registrant_name', 'expiration_date', 'registrar', 'name_servers'] if available.
 Usage:
-/> python siteinfo.py whois lookup --csv input_csv --output results.json
+/> python siteinfo.py whois --csv input_csv --output results.json
 
 Check only one site.
-/> python siteinfo.py whois lookup mydomain.com 
+/> python siteinfo.py whois mydomain.com 
 
 Check for what is running. Returns json 
 Usage:
@@ -20,7 +20,7 @@ Check ip address resolves to
 /> python siteinfo.py status --csv input.csv --output results.json
 
 Check it all
-/> python siteinfo.py lookup --csv input.csv --output results.json 
+/> python siteinfo.py all --csv input.csv --output results.json 
 
 Check params
 /> python siteinfo.py --help

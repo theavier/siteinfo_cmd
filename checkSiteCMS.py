@@ -3,7 +3,7 @@ import os
 import json
 from checkSiteStatus import validate_http
 from loguru import logger
-from tools import get_csv, write_csv, write_json, log_init, list_or_item, save_or_print
+from tools import log_init, list_or_item, save_or_print
 
 app = typer.Typer()
 
@@ -28,11 +28,11 @@ def whatis_item(item: dict) -> dict:
     return item
 
 @app.command('lookup')
-def run_main(url: str = typer.Argument(None, help='url to scan'),
+def main(url: str = typer.Argument(None, help='url to scan'),
     csv: str = typer.Option(None, help='csv with urls to scan'),
     output: str = typer.Option(None, help='output filename'),
     verbose: bool = typer.Option(False)) -> None:
-
+    """ Runs whatcms on url """
     log_init(verbose)
     items = list_or_item(url, csv)
     end_results = whatis_items(items)

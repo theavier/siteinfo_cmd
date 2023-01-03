@@ -56,30 +56,37 @@ def merge_list_dicts(first: list, second: list, key: str) -> list:
             results.append(item)
     return results
 
-def log_remove_verbose():
-    logger.remove()
-    logger.add(sys.stderr, level='WARNING')
 
-def save_or_print(results, output=None):
-    logger.info(f' output: {output}, type: {type(output)}')
+def save_or_print(results: list, output: str = None):
+    logger.debug(f' output: {output}, type: {type(output)}')
     if output:
-        logger.info(f' output param used: {output}')
+        logger.info(f'Saved file to {output}')
         write_json(results, output)
         #write_csv(results, output)
     else:
-        logger.info(f'Printing results...')
+        logger.debug(f'Printing results...')
         print(results)
 
-def list_or_item(url=None, csv=None):
-    if csv:
-        logger.debug(f'csv param used: {csv}')
-        items = get_csv(csv)
+
+def list_or_item(url: str = None, _csv: str = None) -> list:
+    """ if csv it set, return that else make list of url-string """
+    if _csv:
+        logger.debug(f'csv param used: {_csv}')
+        items = get_csv(_csv)
     else:
         logger.debug(f'no csv param used: {url}')
         items = [{'url': url}]
     return items
 
-def log_init(verbose, logname="log.log"):
+
+def log_remove_verbose() -> None:
+    """ Sets minimum loglevel on loguru """
+    logger.remove()
+    logger.add(sys.stderr, level='INFO')
+
+
+def log_init(verbose: bool, logname: str = "log.log") -> None:
+    """ Checks if verbose is set and sets loglevel accordingly """
     if verbose is not True:
         log_remove_verbose()
     logger.add(logname)

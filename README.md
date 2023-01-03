@@ -1,21 +1,29 @@
 Python check for status of urls. Returns ip, statuscode
 
 Usage:
-/> python checkSiteStatus.py --csv input.csv --output newname.csv
+/> python siteinfo.py status lookup --csv input_csv --output results.json
 
-Outputs to --output filename. If now value given, defaults to results.csv
+Outputs to --output filename. If no value given, prints results
 
 Python check for whois attributes. Returns ['registrant_name', 'expiration_date', 'registrar', 'name_servers'] if available.
 Usage:
-/> python checkSiteWhois.py --csv input.csv --output newname.csv
+/> python siteinfo.py whois lookup --csv input_csv --output results.json
 
 Check only one site.
-/> python checkSiteWhois.py --input_raw mydomain.com 
+/> python siteinfo.py whois lookup mydomain.com 
 
-Python check for what is running. Returns dict. 
+Check for what is running. Returns json 
 Usage:
-/> python checkSitecms.py --csv input.csv --output result_whatis.json
+/> python siteinfo.py whatis --csv input.csv --output results.json
+
+Check ip address resolves to
+/> python siteinfo.py status --csv input.csv --output results.json
 
 Check it all
-/> python siteinfo.py --csv input.csv --output result_siteinfo.json --who_is True --what_is True --status True
+/> python siteinfo.py lookup --csv input.csv --output results.json 
 
+Check params
+/> python siteinfo.py --help
+/> python siteinfo.py whatis --help
+/> python siteinfo.py whois --help
+/> python siteinfo.py status --help

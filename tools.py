@@ -1,6 +1,7 @@
 import csv
 import json
 from loguru import logger
+import sys
 
 
 def get_csv(_input: str) -> list:
@@ -54,3 +55,31 @@ def merge_list_dicts(first: list, second: list, key: str) -> list:
         else:
             results.append(item)
     return results
+
+def log_remove_verbose():
+    logger.remove()
+    logger.add(sys.stderr, level='WARNING')
+
+def save_or_print(results, output=None):
+    logger.info(f' output: {output}, type: {type(output)}')
+    if output:
+        logger.info(f' output param used: {output}')
+        write_json(results, output)
+        #write_csv(results, output)
+    else:
+        logger.info(f'Printing results...')
+        print(results)
+
+def list_or_item(url=None, csv=None):
+    if csv:
+        logger.debug(f'csv param used: {csv}')
+        items = get_csv(csv)
+    else:
+        logger.debug(f'no csv param used: {url}')
+        items = [{'url': url}]
+    return items
+
+def log_init(verbose, logname="log.log"):
+    if verbose is not True:
+        log_remove_verbose()
+    logger.add(logname)

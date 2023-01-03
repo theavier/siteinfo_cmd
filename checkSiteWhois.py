@@ -1,10 +1,11 @@
-import click
 import whois
+import typer
 import re
 from loguru import logger
 from datetime import datetime
-from tools import get_csv, write_csv
+from tools import get_csv, write_csv, log_remove_verbose
 
+app = typer.Typer()
 
 def cleanup_url(url: str) -> str:
     """ trims away http[s] and www."""
@@ -14,7 +15,9 @@ def cleanup_url(url: str) -> str:
 
 def whois_domain(domain: str) -> dict:
     """ looks up domain and returns result """
+    logger.info(f'Running whois on {domain}')
     domain = cleanup_url(domain)
+    logger.info(f'Cleaned {domain}')
     try:
         return whois.whois(domain)
     except BaseException as err:
@@ -47,26 +50,38 @@ def whois_domain_extract(w: dict, attributs: list = \
     return _result
 
 
-def whois_domain_items(items: list) -> list:
+def whois_domain_items(items) -> list:
     """ takes input dict, runs whois on url and returns item with added attributs to dict"""
     _results = list()
     for item in items:
         item.update(whois_domain_extract(whois_domain(item['url'])))
         _results.append(item)
-    #_results = [item.update(whois_domain_attributes(item['url'])) for item in items]
-    #print(f'whois_domain_loop: outer type={type(_results)}, inner type={type(_results[0])}')
     return _results
 
 
-@click.command()
-@click.option('--csv', default='input.csv')
-@click.option('--output', default='result.csv')
-def run_main(csv: str, output: str) -> None:
-    logger.add("log.log", rotation="12:00")
-    items = get_csv(csv)
-    results = whois_domain_items(items)
-    write_csv(results, output)
+@app.command('lookup')
+def run_main(url: str = typer.Argument(None, help='url to scan'),
+             csv: str = typer.Option(None, help='csv with urls to scan'),
+             output: str = typer.Option(None, help='output filename'),
+             verbose: bool = typer.Option(False)) -> None:
+    """ main function """
+    if verbose is not True:
+        log_remove_verbose()
+    logger.add("log.log")
+    if csv:
+        logger.info(f'csv param used: {csv}')
+        items = get_csv(csv)
+        results = whois_domain_items(items)
+    else:
+        logger.info(f'url param used: {url}')
+        results = whois_domain_extract(whois_domain(url))
+    if output:
+        logger.info(f' output param used: {output}')
+        write_csv(results, output)
+    else:
+        logger.info(f'Printing results...')
+        print(results)
 
 
 if __name__ == '__main__':
-    run_main()
+    app()

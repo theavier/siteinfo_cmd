@@ -1,9 +1,10 @@
-import click
+import typer
 import requests
 import re
 from loguru import logger
-from tools import get_csv, write_csv
+from tools import get_csv, write_csv, log_remove_verbose, save_or_print, list_or_item, log_init
 
+app = typer.Typer()
 
 def validate_http(url: str) -> str:
     """ adds https:// if missing"""
@@ -50,15 +51,16 @@ def add_statuscode_item(item: dict) -> dict:
     return item
 
 
-@click.command()
-@click.option('--input_file', prompt='filename')
-@click.option('--output', default='result.csv')
-def run_main(input_file: str, output: str) -> None:
-    logger.add("log.log", rotation="12:00")
-    items = get_csv(input_file)
-    results = add_statuscode(items)
-    write_csv(results, output)
+@app.command('lookup')
+def run_main(url: str = typer.Argument(None, help='url to scan'),
+    csv: str = typer.Option(None, help='csv with urls to scan'),
+    output: str = typer.Option(None, help='output filename'),
+    verbose: bool = typer.Option(False)) -> None:
+    log_init(verbose)
+    items = list_or_item(url, csv)
+    end_results = add_statuscode(items)
+    save_or_print(end_results, output)
 
 
 if __name__ == '__main__':
-    run_main()
+    app()

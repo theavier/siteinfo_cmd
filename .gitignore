@@ -8,6 +8,7 @@ __pycache__
 *.pdf
 /migrations/*
 /__pycache__/*
+temp
 # Compiled source #
 ###################
 *.com
@@ -16,8 +17,8 @@ __pycache__
 *.exe
 *.o
 *.so
-*.log
-*.csv
+# *.csv
+# *.txt
 
 # Packages #
 ############

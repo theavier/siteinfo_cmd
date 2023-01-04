@@ -1,2 +1,0 @@
-url,registrant_name,expiration_date,registrar,name_servers,dnssec,org
-https://www.dataman.se,(not shown),2024-02-13,Loopia AB,ns2.loopia.se 93.188.0.21 2a02:250:ffff::21;ns1.loopia.se 93.188.0.20 2a02:250:ffff::20,signed delegation,N/A

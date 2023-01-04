@@ -17,8 +17,9 @@ temp
 *.exe
 *.o
 *.so
-# *.csv
-# *.txt
+*.csv
+*.txt
+*.json
 
 # Packages #
 ############

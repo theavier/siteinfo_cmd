@@ -12,9 +12,7 @@ RUN mkdir ${APP_ROOT}
 # install dependencies
 RUN apk update && apk add postgresql-dev gcc
 RUN pip install --upgrade pip
-WORKDIR ${CONFIG_ROOT}
-#COPY requirements.txt ${CONFIG_ROOT}/
-COPY requirements.txt .
+COPY requirements.txt ${CONFIG_ROOT}/
 RUN pip install -r ${CONFIG_ROOT}/requirements.txt
 RUN pip install uvicorn
 #RUN apk update && apk add cron

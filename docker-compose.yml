@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  web:
+    build: ./app
+    command: uvicorn siteinfo:app
+    volumes:
+      - ./app/:/usr/src/app/
+    ports:
+      - 8000:8000
+    #env_file:
+    #  - ./.env.dev

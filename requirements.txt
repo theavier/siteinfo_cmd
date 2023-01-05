@@ -8,3 +8,6 @@ axe-selenium-python
 selenium
 loguru
 typer
+fastapi
+uvicorn[standard]
+pydantic

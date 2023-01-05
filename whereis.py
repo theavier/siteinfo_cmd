@@ -3,11 +3,8 @@ import socket
 import re
 from typing import Union
 from loguru import logger
-import typer
-from tools import log_init, list_or_item, save_or_print
 
-app = typer.Typer()
-
+NOT_FOUND_MSG = "N/A"
 
 """ gets network info from ip using IPWhois """
 def query_ip(ip: str) -> dict:
@@ -37,7 +34,6 @@ def query_ip_extract(result):
 def query_ip_result(ip: str) -> dict:
     result = query_ip(ip)
     result_extract = query_ip_extract(result)
-    #return result
     return result_extract
 
 
@@ -51,32 +47,27 @@ def get_ip(urladdress: str) -> Union[str, bool]:
         return "N/A, Error: "+str(e), False
 
 
-def whereis_item(item):
-    logger.debug(f'Running whereis on {item["url"]}')
-    result_ip = get_ip(item['url'])
-    result = query_ip_result(result_ip[0])
-    if result:
-        item['whereis'] = result
+def whereis_item(item: dict):
+    logger.debug(f'{item["url"]}: running whereis...')
+    result_ip, status = get_ip(item['url'])
+    if status:
+        logger.debug(f'{item["url"]}: running against ip {result_ip}, type: {type(result_ip)}')
+        try:
+            if isinstance(result_ip, str):
+                result = query_ip_result(result_ip)
+            else:
+                logger.warning(f'Issue at {item["url"]}, type: {type(result_ip)}')
+                result = query_ip_result(result_ip[0])
+            end_result = result if result else NOT_FOUND_MSG
+        except:
+            logger.warning(f'Running against ip: {result_ip}, type: {type(result_ip)}')
+            end_result = NOT_FOUND_MSG
     else:
-        item['whereis'] = "N/A"
+        end_result = NOT_FOUND_MSG
+        logger.warning(f'{item["url"]}: {result_ip}')
+    item['whereis'] = end_result
     return item
 
 
-def whereis_items(items):
+def whereis_items(items: list):
     return [whereis_item(item) for item in items]
-
-
-@app.command('lookup')
-def main(url: str = typer.Argument(None, help='url to scan'),
-    csv: str = typer.Option(None, help='csv with urls to scan'),
-    output: str = typer.Option(None, help='output filename'),
-    verbose: bool = typer.Option(False)) -> None:
-    """ Runs ip provider lookup on url """
-    log_init(verbose)
-    items = list_or_item(url, csv)
-    end_results = whereis_items(items)
-    save_or_print(end_results, output)
-
-
-if __name__ == '__main__':
-    app()

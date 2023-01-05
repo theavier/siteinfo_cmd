@@ -1,11 +1,8 @@
-import typer
 import os
 import json
 from checkSiteStatus import validate_http
 from loguru import logger
-from tools import log_init, list_or_item, save_or_print
 
-app = typer.Typer()
 
 """ whatis query that runs wad-cmd"""
 def query_whatis_run(domain:str) -> str:
@@ -26,18 +23,3 @@ def whatis_item(item: dict) -> dict:
     result = json.loads(query_whatis_run(validate_http(item['url'])))
     item['cms'] = list(result.values())[0] if result else "N/A"
     return item
-
-@app.command('lookup')
-def main(url: str = typer.Argument(None, help='url to scan'),
-    csv: str = typer.Option(None, help='csv with urls to scan'),
-    output: str = typer.Option(None, help='output filename'),
-    verbose: bool = typer.Option(False)) -> None:
-    """ Runs whatcms on url """
-    log_init(verbose)
-    items = list_or_item(url, csv)
-    end_results = whatis_items(items)
-    save_or_print(end_results, output)
-
-
-if __name__ == '__main__':
-    app()

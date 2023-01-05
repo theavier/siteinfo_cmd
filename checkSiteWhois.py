@@ -1,11 +1,9 @@
 import whois
-import typer
 import re
 from loguru import logger
 from datetime import datetime
-from tools import log_init, list_or_item, save_or_print
 
-app = typer.Typer()
+NOT_FOUND_MSG = "N/A"
 
 def cleanup_url(url: str) -> str:
     """ trims away http[s] and www."""
@@ -45,7 +43,7 @@ def whois_domain_extract(w: dict, attributs: list = \
                     _result[attribut_whois] = w[attribut_whois]
             except BaseException as err:
                 logger.warning(f'{w["domain_name"]}: {attribut_whois} Problem. Error: {err}')
-                _result[attribut_whois] = "N/A"
+                _result[attribut_whois] = NOT_FOUND_MSG
     else:
         _result = _attribute_empty(_result, attributs)
     return _result
@@ -59,18 +57,3 @@ def whois_domain_items(items) -> list:
         _results.append(item)
     return _results
 
-
-@app.command('lookup')
-def main(url: str = typer.Argument(None, help='url to scan'),
-             csv: str = typer.Option(None, help='csv with urls to scan'),
-             output: str = typer.Option(None, help='output filename'),
-             verbose: bool = typer.Option(False)) -> None:
-    """ Runs whois on url """
-    log_init(verbose)
-    items = list_or_item(url, csv)
-    results = whois_domain_items(items)
-    save_or_print(results, output)
-
-
-if __name__ == '__main__':
-    app()

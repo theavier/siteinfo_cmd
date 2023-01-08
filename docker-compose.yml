@@ -2,11 +2,9 @@ version: '3.7'
 
 services:
   web:
-    build: ./app
-    command: uvicorn siteinfo:app
-    volumes:
-      - ./app/:/usr/src/app/
+    build:
+      context: siteinfo_cmd/
+      dockerfile: Dockerfile
+    container_name: 'FastAPI'
     ports:
-      - 8000:8000
-    #env_file:
-    #  - ./.env.dev
+      - 80:80
